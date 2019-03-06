@@ -4,6 +4,8 @@ import { inject as service } from "@ember/service";
 export default Component.extend({
   memory: service('memory-scroll'),
 
+  reset: false,
+  skipFirst: false,
   didRender() {
     this._super(...arguments);
     let key = this.get('key');
@@ -30,7 +32,15 @@ export default Component.extend({
   },
 
   restore(key) {
-    let position = this.get('memory')[key] || 0;
+    let position = this.get('memory')[key];
+    if (this.get('skipFirst') && typeof position === 'undefined') {
+      return;
+    }
+
+    if (!position || this.get('reset')) {
+      position = 0;
+    }
+
     let elt = this.targetElement();
     if (elt) {
       elt.scrollTop = position;
